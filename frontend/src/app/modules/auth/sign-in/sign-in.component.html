@@ -1,0 +1,122 @@
+<div class="flex flex-col flex-auto items-center sm:justify-center min-w-0 md:p-8">
+    <div class="flex md:w-full md:max-w-6xl sm:rounded-2xl sm:shadow overflow-hidden sm:bg-card">
+        <div class="w-full sm:w-auto py-8 px-4 sm:p-12 md:p-16">
+            <div class="w-full max-w-80 sm:w-80 mx-auto sm:mx-0">
+                <!-- Logo -->
+                <div class="">
+                    <img src="assets/images/logo/Elite_Afrique.png">
+                </div>
+    
+                <!-- Title -->
+                <div class="mt-8 text-4xl font-extrabold tracking-tight leading-tight">Connexion</div>
+                <div class="flex items-baseline mt-0.5 font-medium">
+                    <br><div>Saisisez vos identifiants</div>
+                </div>
+    
+                <!-- Alert -->
+                <fuse-alert
+                    class="mt-8 -mb-4"
+                    *ngIf="showAlert"
+                    [appearance]="'outline'"
+                    [showIcon]="false"
+                    [type]="alert.type"
+                    [@shake]="alert.type === 'error'">
+                    {{alert.message}}
+                </fuse-alert>
+    
+                <!-- Sign in form -->
+                <form
+                    class="mt-8"
+                    [formGroup]="signInForm"
+                    #signInNgForm="ngForm">
+    
+                    <!-- Email field -->
+                    <mat-form-field class="w-full">
+                        <mat-label>Email</mat-label>
+                        <input
+                            id="email"
+                            matInput
+                            [formControlName]="'email'">
+                        <mat-error *ngIf="signInForm.get('email').hasError('required')">
+                            Email obligatoire
+                        </mat-error>
+                        <mat-error *ngIf="signInForm.get('email').hasError('email')">
+                            Veuillez entrer un email valide
+                        </mat-error>
+                    </mat-form-field>
+    
+                    <!-- Password field -->
+                    <mat-form-field class="w-full">
+                        <mat-label>Mot de passe</mat-label>
+                        <input
+                            id="password"
+                            matInput
+                            type="password"
+                            [formControlName]="'password'"
+                            #passwordField>
+                        <button
+                            mat-icon-button
+                            type="button"
+                            (click)="passwordField.type === 'password' ? passwordField.type = 'text' : passwordField.type = 'password'"
+                            matSuffix>
+                            <mat-icon
+                                class="icon-size-5"
+                                *ngIf="passwordField.type === 'password'"
+                                [svgIcon]="'heroicons_solid:eye'"></mat-icon>
+                            <mat-icon
+                                class="icon-size-5"
+                                *ngIf="passwordField.type === 'text'"
+                                [svgIcon]="'heroicons_solid:eye-off'"></mat-icon>
+                        </button>
+                        <mat-error>
+                            Mot de passe obligatoire
+                        </mat-error>
+                    </mat-form-field>
+    
+                    <!-- Actions -->
+                    <div class="inline-flex items-end justify-between w-full mt-1.5">
+                        <mat-checkbox
+                            [color]="'primary'"
+                            [formControlName]="'rememberMe'">
+                            Se souvenir de moi
+                        </mat-checkbox>
+                        <a
+                            class="text-md font-medium text-primary-500 hover:underline"
+                            [routerLink]="['/forgot-password']">Mot de passe oublié ?
+                        </a>
+                    </div>
+    
+                    <!-- Submit button -->
+                    <button
+                        class="fuse-mat-button-large w-full mt-6"
+                        mat-flat-button
+                        style="background-color: rgb(0, 110, 255); color: white;"
+                        [disabled]="signInForm.disabled"
+                        (click)="signIn()">
+                        <span *ngIf="!signInForm.disabled">
+                            Connexion
+                        </span>
+                        <mat-progress-spinner
+                            *ngIf="signInForm.disabled"
+                            [diameter]="24"
+                            [mode]="'indeterminate'"></mat-progress-spinner>
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div class="relative hidden md:flex flex-auto items-center justify-center w-1/2 h-full p-16 lg:px-28 overflow-hidden" style="background-color: rgba(6, 81, 179, 0.849);">
+            <div class="z-10 relative w-full max-w-2xl">
+                <div class="text-7xl font-bold leading-none text-gray-10">
+                    <div>Bienvenue</div>
+                    <div>sur le systeme de Gestion</div>
+                    <div>des Activite de Elite Afrique</div>
+                </div>
+                <div class="mt-6 text-lg tracking-tight leading-6 text-gray-10">
+                    GPA_Systeme (Systeme de Gestion des Programmes d'Activites) est une plate-forme de gestion
+                    des activites que menent Elite Afrique, et regroupe toutes les sections de la dite structure
+                    se trouvant dans tous les 13 region du Burkina Faso.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

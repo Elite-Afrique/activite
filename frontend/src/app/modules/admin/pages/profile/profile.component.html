@@ -1,0 +1,189 @@
+<div class="flex flex-col flex-auto min-w-0">
+
+    <!-- Header -->
+    <div class="flex flex-col shadow bg-card">
+
+        <!-- Cover image -->
+        <div>
+            <img class="h-40 lg:h-50 object-cover" src="assets/images/pages/profile/cover.jpeg" alt="Cover image">
+        </div>
+
+        <!-- User info -->
+        <div class="flex flex-col flex-0 lg:flex-row items-center max-w-5xl w-full mx-auto px-8 lg:h-18 bg-card">
+
+            <!-- Avatar -->
+            <div class="-mt-26 lg:-mt-22 rounded-full">
+                <img class="w-32 h-32 rounded-full ring-4 ring-bg-card" src="assets/images/avatars/male-04.jpg"
+                    alt="User avatar">
+            </div>
+
+            <!-- Details -->
+            <div class="flex flex-col items-center lg:items-start mt-4 lg:mt-0 lg:ml-8">
+                <div class="text-lg font-bold leading-none">{{user.nom}} {{user.prenom}}</div>
+                <div class="text-secondary">{{user.email}}</div>
+            </div>
+
+            <!-- Separator -->
+            <div class="hidden lg:flex h-8 mx-8 border-l-2"></div>
+
+            <!-- Stats -->
+            <div class="flex items-center mt-6 lg:mt-0 space-x-6">
+                <div class="flex flex-col items-center">
+                    <span class="font-bold">{{user.contact}}</span>
+                    <span class="text-sm font-medium text-secondary">CONTACT</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <span class="font-bold">{{user.poste}}</span>
+                    <span class="text-sm font-medium text-secondary">POSTE</span>
+                </div>
+            </div>
+
+            <!-- Menu -->
+            <!-- <div class="flex items-center mt-8 mb-4 lg:m-0 lg:ml-auto space-x-6">
+                <a class="font-medium" [routerLink]="['./']">
+                    Tableau de bord
+                </a>
+                <a class="text-secondary" [routerLink]="['./']">
+                    About
+                </a>
+                <a class="text-secondary" [routerLink]="['./']">
+                    Followers
+                </a>
+                <a class="text-secondary" [routerLink]="['./']">
+                    Gallery
+                </a>
+            </div> -->
+
+        </div>
+
+    </div>
+
+    <!-- Main -->
+    <div class="flex flex-col sm:flex-row justify-center w-full max-w-5xl mx-auto p-6 sm:p-8">
+        <!-- Column -->
+        <div class="flex-col items-start m-2">
+            <!-- Post 2 -->
+            <fuse-card class="flex-col max-w-140 w-full p-8">
+                <div class="text-2xl font-semibold leading-tight">Informations personnelles</div>
+                <div class="mt-4">
+                    <form class="flex flex-col w-full" [formGroup]="updateProfileForm">
+                        <div class=" flex-col w-full lg:w-full sm:pl-8">
+
+                            <div class="flex">
+                                <mat-form-field class="w-1/2 px-2">
+                                    <mat-label>Nom</mat-label>
+                                    <input matInput [formControlName]="'nom'">
+                                </mat-form-field>
+
+                                <mat-form-field class="w-1/2 px-2">
+                                    <mat-label>Prénom</mat-label>
+                                    <input matInput [formControlName]="'prenom'">
+                                </mat-form-field>
+                            </div>
+
+                            <mat-form-field class="w-full">
+                                <mat-label>Email</mat-label>
+                                <input matInput [formControlName]="'email'" disabled>
+                            </mat-form-field>
+
+                            <div class="flex">
+                                <mat-form-field class="w-1/2 px-2">
+                                    <mat-label>Contact</mat-label>
+                                    <input matInput [formControlName]="'numero'">
+                                </mat-form-field>
+
+                                <mat-form-field class="w-1/2 px-2">
+                                    <mat-label>Poste</mat-label>
+                                    <input matInput [formControlName]="'poste'" [value]="user.poste" disabled>
+                                </mat-form-field>
+                            </div>
+
+                        </div>
+                        <button class="px-6 mt-8" mat-flat-button [color]="'primary'" (click)="updateProfile()">
+                            <span class="ml-2 mr-1">Modifier</span>
+                        </button>
+                    </form>
+                </div>
+            </fuse-card>
+        </div>
+
+
+
+
+        <div class="flex flex-col items-start m-2">
+            <!-- About me -->
+            <fuse-card class="flex flex-col max-w-80 w-full p-8">
+                <div class="text-2xl font-semibold leading-tight">Mot de passe</div>
+                <div class="mt-4">
+                    <form class="flex flex-col w-full" [formGroup]="updatePasswordForm">
+                        <div class=" flex-col w-full lg:w-full sm:pl-8">
+
+                            <mat-form-field class="w-full">
+                                <mat-label>Actuel mot de passe</mat-label>
+                                <input id="password" type="password" #passwordField matInput [formControlName]="'oldpassword'">
+                                <button
+                                mat-icon-button
+                                type="button"
+                                (click)="passwordField.type === 'password' ? passwordField.type = 'text' : passwordField.type = 'password'"
+                                matSuffix>
+                                <mat-icon
+                                    class="icon-size-5"
+                                    *ngIf="passwordField.type === 'password'"
+                                    [svgIcon]="'heroicons_solid:eye'"></mat-icon>
+                                <mat-icon
+                                    class="icon-size-5"
+                                    *ngIf="passwordField.type === 'text'"
+                                    [svgIcon]="'heroicons_solid:eye-off'"></mat-icon>
+                            </button>
+                            </mat-form-field>
+
+                            <mat-form-field class="w-full">
+                                <mat-label>Nouveau mot de passe</mat-label>
+                                <input id="password" type="password" #passwordField  matInput [formControlName]="'newpassword'">
+                                <button
+                                mat-icon-button
+                                type="button"
+                                (click)="passwordField.type === 'password' ? passwordField.type = 'text' : passwordField.type = 'password'"
+                                matSuffix>
+                                <mat-icon
+                                    class="icon-size-5"
+                                    *ngIf="passwordField.type === 'password'"
+                                    [svgIcon]="'heroicons_solid:eye'"></mat-icon>
+                                <mat-icon
+                                    class="icon-size-5"
+                                    *ngIf="passwordField.type === 'text'"
+                                    [svgIcon]="'heroicons_solid:eye-off'"></mat-icon>
+                            </button>
+                            </mat-form-field>
+
+                            <mat-form-field class="w-full">
+                                <mat-label>Confirmer mot de passe</mat-label>
+                                <input id="password" type="password" #passwordField  matInput [formControlName]="'confirmpassword'">
+                                <button
+                                mat-icon-button
+                                type="button"
+                                (click)="passwordField.type === 'password' ? passwordField.type = 'text' : passwordField.type = 'password'"
+                                matSuffix>
+                                <mat-icon
+                                    class="icon-size-5"
+                                    *ngIf="passwordField.type === 'password'"
+                                    [svgIcon]="'heroicons_solid:eye'"></mat-icon>
+                                <mat-icon
+                                    class="icon-size-5"
+                                    *ngIf="passwordField.type === 'text'"
+                                    [svgIcon]="'heroicons_solid:eye-off'"></mat-icon>
+                            </button>
+                            </mat-form-field>
+
+                        </div>
+                        <button class="px-6 mt-8" mat-flat-button [color]="'primary'" (click)="updatePassword()">
+                            <span class="ml-2 mr-1">Modifier</span>
+                        </button>
+                    </form>
+                </div>
+            </fuse-card>
+        </div>
+
+    </div>
+
+</div>

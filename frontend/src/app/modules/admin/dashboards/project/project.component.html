@@ -1,0 +1,867 @@
+<style>
+    .role {
+        width: 300px;
+        float: right;
+        height: 100%;
+        position: fixed;
+    }
+
+    /* table,th,td{
+        text-align: center;
+        border: 1px solid;
+        border-color: #94A3B8;
+        border-radius: 25%;
+    } */
+    .tr {
+        height: 35px;
+        text-align: center;
+        border: 1px solid;
+        border-color: #94A3B8;
+        border-radius: 25%;
+    }
+</style>
+<div class="flex flex-col flex-auto min-w-0">
+    <!-- Main -->
+    <div class="flex-auto border-t -mt-px pt-4 sm:pt-6">
+        <div class="w-full max-w-screen-xl mx-auto">
+            <!-- Tabs -->
+            <mat-tab-group class="sm:px-2" [animationDuration]="'0'" [selectedIndex]="selectedIndex">
+
+                <!-- Statistiques -->
+                <mat-tab label="Statistiques" *ngIf="displayMatLabel">
+                    <ng-template matTabContent>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 w-full min-w-0">
+                            <!-- Personnels -->
+                            <div class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden">
+                                <div class="flex items-start justify-between">
+                                    <div class="text-lg font-medium tracking-tight leading-6 truncate">Personnels</div>
+                                </div>
+                                <hr>
+                                <div class="flex flex-col items-center mt-2">
+                                    <div
+                                        class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-blue-500">
+                                        {{statistiq.personalCount}}</div>
+                                </div>
+                            </div>
+                            <!-- Activité en cours -->
+                            <div class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden">
+                                <div class="flex items-start justify-between">
+                                    <div class="text-lg font-medium tracking-tight leading-6 truncate">Activité en cours
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="flex flex-col items-center mt-2">
+                                    <div
+                                        class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-blue-500">
+                                        {{actualprogramprogress}}%</div>
+                                </div>
+                            </div>
+                            <!-- Besoins exprimes -->
+                            <div class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden">
+                                <div class="flex items-start justify-between">
+                                    <div class="text-lg font-medium tracking-tight leading-6 truncate">Besoins exprimes
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="flex flex-col items-center mt-2">
+                                    <div
+                                        class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-blue-500">
+                                        {{statistiq.besoinExCount}}</div>
+                                </div>
+                            </div>
+                            <!-- Activites non validees -->
+                            <div class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden">
+                                <div class="flex items-start justify-between">
+                                    <div class="text-lg font-medium tracking-tight leading-6 truncate">Tâches non
+                                        validees</div>
+                                </div>
+                                <hr>
+                                <div class="flex flex-col items-center mt-2">
+                                    <div
+                                        class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-blue-500">
+                                        {{statistiq.tacheNvlCount}}</div>
+                                </div>
+                            </div>
+
+                            <!-- Evolution des activités de la semaine -->
+                            <div
+                                class="sm:col-span-2 md:col-span-4 flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden">
+                                <div class="flex flex-col sm:flex-row items-start justify-between">
+                                    <div class="text-lg font-medium tracking-tight leading-6 truncate">Evolution des
+                                        activités de la semaine</div>
+                                    <div class="mt-3 sm:mt-0 sm:ml-2">
+                                        <mat-button-toggle-group value="this-week"
+                                            #githubIssuesWeekSelector="matButtonToggleGroup">
+                                            <mat-button-toggle value="last-week" [disabled]="true"
+                                                style="background-color: #94A3B8;">Précédent</mat-button-toggle>
+                                            <mat-button-toggle value="this-week" [disabled]="true"
+                                                style="background-color: #305ae4;">En cours</mat-button-toggle>
+                                        </mat-button-toggle-group>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-1 lg:grid-cols-1 grid-flow-row gap-6 w-full mt-8 sm:mt-4">
+                                    <!-- New vs. Closed -->
+                                    <div class="flex flex-col flex-auto">
+                                        <div class="flex flex-col flex-auto">
+                                            <apx-chart class="flex-auto w-full h-80" [chart]="chartGithubIssues.chart"
+                                                [colors]="chartGithubIssues.colors"
+                                                [dataLabels]="chartGithubIssues.dataLabels"
+                                                [grid]="chartGithubIssues.grid" [labels]="alldaysweek"
+                                                [legend]="chartGithubIssues.legend"
+                                                [plotOptions]="chartGithubIssues.plotOptions"
+                                                [series]="chartGithubIssues.series" [states]="chartGithubIssues.states"
+                                                [stroke]="chartGithubIssues.stroke"
+                                                [tooltip]="chartGithubIssues.tooltip" [xaxis]="chartGithubIssues.xaxis"
+                                                [yaxis]="chartGithubIssues.yaxis">
+                                            </apx-chart>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </ng-template>
+                </mat-tab>
+
+                <!-- Programmes -->
+                <mat-tab label="Programmes">
+                    <ng-template matTabContent>
+                        <div class="grid grid-cols-1 sm:grid-cols-6 gap-6 w-full min-w-0">
+                            <!-- Liste des programmes -->
+                            <div class="sm:col-span-6 flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden"
+                                *ngIf="displayProgramme">
+                                <!-- Menu des options possibles  -->
+                                <div class="flex items-center">
+                                    <div class="flex flex-col">
+                                        <div class="mr-4 text-lg font-medium tracking-tight leading-6 truncate">Liste
+                                            des programmes d'activités</div>
+                                    </div>
+                                    <div class="ml-auto -mt-2 -mr-2" *ngIf="displayMatLabel">
+                                        <button mat-icon-button [matMenuTriggerFor]="budgetMenu">
+                                            <mat-icon class="icon-size-5"
+                                                [svgIcon]="'heroicons_solid:dots-vertical'"></mat-icon>
+                                        </button>
+                                        <mat-menu #budgetMenu="matMenu">
+                                            <button mat-menu-item (click)="openPopup()">
+                                                Ajouter une activité
+                                            </button>
+                                            <mat-divider class="my-2"></mat-divider>
+                                            <button mat-menu-item>
+                                                <span class="flex items-center">
+                                                    <mat-icon class="icon-size-5 mr-3"
+                                                        [svgIcon]="'heroicons_solid:printer'"></mat-icon>
+                                                    <span>Imprimer la liste</span>
+                                                </span>
+                                            </button>
+                                        </mat-menu>
+                                    </div>
+                                </div>
+                                <!-- Barre de progression des programmes -->
+                                <div class="my-8 space-y-8 cursor-pointer" *ngFor="let programmes of allprogrammes">
+                                    <div class="flex flex-col" (click)="getProgram(programmes.id)">
+                                        <div class="flex items-center">
+
+                                            <div
+                                                class="flex items-center justify-center w-14 h-14 rounded text-red-800 dark:bg-red-600 dark:text-red-50">
+                                                <img class="text-current" src="assets/images/iconVecteur/file.svg">
+                                            </div>
+
+                                            <div class="flex-auto ml-4 leading-none">
+                                                <div class="mt-2 font-medium text-2xl">{{ programmes.titreprogramme}}
+                                                </div>
+                                                <mat-progress-bar
+                                                    *ngIf="programmes.progress >= 0 && programmes.progress <= 33"
+                                                    [color]="'warn'" [mode]="'determinate'"
+                                                    [value]="programmes.progress">
+                                                </mat-progress-bar>
+                                                <mat-progress-bar
+                                                    *ngIf="programmes.progress > 33 && programmes.progress <= 66"
+                                                    [color]="'accent'" [mode]="'determinate'"
+                                                    [value]="programmes.progress">
+                                                </mat-progress-bar>
+                                                <mat-progress-bar
+                                                    *ngIf="programmes.progress > 66 && programmes.progress <= 100"
+                                                    [color]="'primary'" [mode]="'determinate'"
+                                                    [value]="programmes.progress">
+                                                </mat-progress-bar>
+                                            </div>
+                                            <!-- class="mt-3 rounded-full" -->
+
+                                            <div class="flex items-end justify-end min-w-18 mt-auto ml-6">
+                                                <div class="text-lg leading-none">{{programmes.progress}}%</div>
+                                                <mat-icon *ngIf="programmes.progress >= 0 && programmes.progress <= 33"
+                                                    class="text-red-600 icon-size-4 ml-1"
+                                                    [svgIcon]="'heroicons_solid:arrow-narrow-up'"></mat-icon>
+                                                <mat-icon *ngIf="programmes.progress > 33 && programmes.progress <= 66"
+                                                    class="text-yellow-600 icon-size-4 ml-1"
+                                                    [svgIcon]="'heroicons_solid:arrow-narrow-up'"></mat-icon>
+                                                <mat-icon *ngIf="programmes.progress > 66 && programmes.progress <= 100"
+                                                    class="text-green-600 icon-size-4 ml-1"
+                                                    [svgIcon]="'heroicons_solid:arrow-narrow-up'"></mat-icon>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Add programme form -->
+                            <div class="sm:col-span-6 flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden"
+                                *ngIf="displayAddProgramme">
+
+                                <div class="flex items-center">
+                                    <div class="flex flex-col">
+                                        <div class="mr-4 text-lg font-medium tracking-tight leading-6 truncate">
+                                            {{TitreProgramme}}</div>
+                                    </div>
+                                    <div class="ml-auto -mt-2 -mr-2">
+                                        <button (click)="closePopup()" mat-icon-button>
+                                            <mat-icon class="icon-size-5 text-red-600"
+                                                [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <form class="flex flex-col w-full" [formGroup]="addProgramForm">
+                                    <div class="flex flex-col w-full lg:w-full sm:pl-8">
+                                        <!-- Name -->
+                                        <mat-form-field class="w-full">
+                                            <mat-label>Activités</mat-label>
+                                            <input matInput [formControlName]="'activite_id'">
+                                        </mat-form-field>
+                                        <!-- SKU and Barcode -->
+                                        <div class="flex">
+                                            <mat-form-field class="w-1/3 pr-2">
+                                                <mat-label>Date</mat-label>
+                                                <input type="date" matInput [formControlName]="'date'">
+                                            </mat-form-field>
+
+                                            <mat-form-field class="w-2/3 pr-2">
+                                                <mat-label>Personnels</mat-label>
+                                                <mat-select [formControlName]="'userid'">
+                                                    <ng-container>
+                                                        <mat-option *ngFor="let users of allusers"
+                                                            [value]="users.id">{{users.nom}}
+                                                            {{users.prenom}}</mat-option>
+                                                    </ng-container>
+                                                </mat-select>
+                                            </mat-form-field>
+
+                                        </div>
+                                    </div>
+                                    <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
+                                        <button class="ml-4" mat-flat-button [color]="'primary'"
+                                            (click)="submitProgramme()">
+                                            <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                                            <span class="ml-2 mr-1">Ajouter</span>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- update programme form -->
+                            <div class="sm:col-span-6 flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden"
+                                *ngIf="displayDetailActivite">
+
+                                <div class="flex items-center">
+                                    <div class="flex flex-col">
+                                        <div class="mr-4 text-lg font-medium tracking-tight leading-6 truncate">
+                                            Modification du programme</div>
+                                    </div>
+                                    <div class="ml-auto -mt-2 -mr-2">
+                                        <button (click)="closedetail()" mat-icon-button>
+                                            <mat-icon class="icon-size-5 text-red-600"
+                                                [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <form class="flex flex-col w-full" [formGroup]="updateProgramForm">
+                                    <div class="flex flex-col w-full lg:w-full sm:pl-8">
+                                        <!-- Name -->
+                                        <mat-form-field class="w-full">
+                                            <mat-label>Activités</mat-label>
+                                            <input matInput [formControlName]="'activite_id'">
+                                        </mat-form-field>
+                                        <!-- SKU and Barcode -->
+                                        <div class="flex">
+                                            <mat-form-field class="w-1/3 pr-2">
+                                                <mat-label>Date</mat-label>
+                                                <input type="date" matInput [formControlName]="'date'">
+                                            </mat-form-field>
+
+                                            <mat-form-field class="w-2/3 pr-2">
+                                                <mat-label>Personnels</mat-label>
+                                                <mat-select [formControlName]="'userid'">
+                                                    <ng-container>
+                                                        <mat-option *ngFor="let users of allusers"
+                                                            [value]="users.id">{{users.nom}}
+                                                            {{users.prenom}}</mat-option>
+                                                    </ng-container>
+                                                </mat-select>
+                                            </mat-form-field>
+
+                                        </div>
+                                        <!-- Name -->
+                                        <mat-form-field class="w-full hidden">
+                                            <mat-label>Id</mat-label>
+                                            <input matInput [formControlName]="'id'">
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
+                                        <button class="ml-4" mat-flat-button [color]="'primary'"
+                                            (click)="updateProgramme()" *ngIf="displayMatLabel">
+                                            <mat-icon [svgIcon]="'heroicons_outline:pencil'"></mat-icon>
+                                            <span class="ml-2 mr-1">Modifier</span>
+                                        </button>
+
+                                        <button class="ml-4" mat-flat-button [color]="'warn'"
+                                            (click)="deleteProgramme(detail_id.programme)" *ngIf="displayMatLabel">
+                                            <mat-icon [svgIcon]="'heroicons_outline:archive'"></mat-icon>
+                                            <span class="ml-2 mr-1">Supprimer</span>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- View current programme -->
+                            <div class="sm:col-span-6 flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden"
+                                *ngIf="displayCurrentProgramme">
+                                <div class="flex items-center">
+                                    <div class="flex flex-col">
+                                        <div class="mr-4 text-lg font-medium tracking-tight leading-6 truncate">
+                                            {{actualprogram[0].titreprogramme}}</div>
+                                    </div>
+                                    <div class="ml-auto -mt-2 -mr-2">
+                                        <button (click)="closePopup()" mat-icon-button>
+                                            <mat-icon class="icon-size-5 text-red-600"
+                                                [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                        </button>
+                                    </div>
+                                </div><br>
+                                <div class="overflow-x-auto mx-6">
+                                    <table class="w-full bg-transparent rounded-2xl">
+                                        <thead>
+                                            <tr class="tr">
+                                                <th>Nom et prénom(s)</th>
+                                                <th>Tâches à executer</th>
+                                                <th>Date</th>
+                                                <th>Statut</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="tr" *ngFor="let programme of actualprogram"
+                                                (click)="detailactivite(programme.id)">
+                                                <td [attr.rowspan]="programme.nbr" *ngIf="programme.nbr>0">
+                                                    {{programme.nom}} {{programme.prenom}}</td>
+                                                <td style="text-align: left" style="cursor: pointer">
+                                                    {{programme.libelleactivite}}</td>
+                                                <td style="cursor: pointer">{{programme.date | date:'dd LLL'}}</td>
+                                                <td style="cursor: pointer">
+                                                    <span
+                                                        class="inline-flex items-center font-bold text-xs px-2.5 py-0.5 rounded-full tracking-wide uppercase"
+                                                        [ngClass]="{'bg-red-200 text-red-800 dark:bg-red-600 dark:text-red-50': programme.statut == 0 && programme.halfstatut == 0,
+                                                                    'bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50': programme.statut == 1,
+                                                                    'bg-yellow-200 text-yellow-800 dark:bg-yellow-600 dark:text-yellow-50': programme.halfstatut == 1}">
+                                                        <span class="leading-relaxed whitespace-nowrap"
+                                                            *ngIf="programme.statut == 0 && programme.halfstatut == 0">Incomplète</span>
+                                                        <span class="leading-relaxed whitespace-nowrap"
+                                                            *ngIf="programme.statut == 1">Complète</span>
+                                                        <span class="leading-relaxed whitespace-nowrap"
+                                                            *ngIf="programme.halfstatut == 1">A moitié</span>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+
+                                </div>
+                            </div>
+
+                            <!-- View current programme -->
+                            <!-- <div class="sm:col-span-6 flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden" *ngIf="displayCurrentProgramme">
+                                <div class="flex items-center">
+                                    <div class="flex flex-col">
+                                        <div class="mr-4 text-lg font-medium tracking-tight leading-6 truncate">{{actualprogram[0].titreprogramme}}</div>
+                                    </div>
+                                    <div class="ml-auto -mt-2 -mr-2">
+                                        <button
+                                            (click)="closePopup()"
+                                            mat-icon-button>
+                                            <mat-icon
+                                                class="icon-size-5 text-red-600"
+                                                [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                        </button>
+                                    </div>
+                                </div><br>
+                                <div class="overflow-x-auto mx-6">
+                                    <table
+                                        class="w-full bg-transparent"
+                                        mat-table
+                                        matSort
+                                        [dataSource]="actualprogram">
+
+                                        <ng-container matColumnDef="nom_prenom">
+                                            <th
+                                                mat-header-cell
+                                                mat-sort-header
+                                                *matHeaderCellDef>
+                                                Nom et prénom(s)
+                                            </th>
+                                            <td
+                                                mat-cell
+                                                *matCellDef="let program">
+                                                <span class="pr-6 font-medium text-sm text-secondary whitespace-nowrap">
+                                                    {{program.nom}} {{program.prenom}}
+                                                </span>
+                                            </td>
+                                        </ng-container>
+
+                                        <ng-container matColumnDef="tache">
+                                            <th
+                                                mat-header-cell
+                                                mat-sort-header
+                                                *matHeaderCellDef>
+                                                Tâches à executer
+                                            </th>
+                                            <td
+                                                mat-cell
+                                                *matCellDef="let program">
+                                                <span class="pr-6 whitespace-nowrap text-sm text-secondary">
+                                                    {{program.libelleactivite}}
+                                                </span>
+                                            </td>
+                                        </ng-container>
+                
+                                        <ng-container matColumnDef="date">
+                                            <th
+                                                mat-header-cell
+                                                mat-sort-header
+                                                *matHeaderCellDef>
+                                                Date
+                                            </th>
+                                            <td
+                                                mat-cell
+                                                *matCellDef="let program">
+                                                <span class="pr-6 whitespace-nowrap">
+                                                    {{program.date | date:'dd MMM'}}
+                                                </span>
+                                            </td>
+                                        </ng-container>
+
+                                        <ng-container matColumnDef="statut">
+                                            <th
+                                                mat-header-cell
+                                                mat-sort-header
+                                                *matHeaderCellDef>
+                                                Statut
+                                            </th>
+                                            <td
+                                                mat-cell
+                                                *matCellDef="let program">
+                                                <span
+                                                    class="inline-flex items-center font-bold text-xs px-2.5 py-0.5 rounded-full tracking-wide uppercase"
+                                                    [ngClass]="{'bg-red-200 text-red-800 dark:bg-red-600 dark:text-red-50': program.statut == 0 && program.halfstatut == 0,
+                                                                'bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50': program.statut == 1,
+                                                                'bg-yellow-200 text-yellow-800 dark:bg-yellow-600 dark:text-yellow-50': program.halfstatut == 1}">
+                                                    <span class="leading-relaxed whitespace-nowrap" *ngIf="program.statut == 0 && program.halfstatut == 0">Incomplète</span>
+                                                    <span class="leading-relaxed whitespace-nowrap" *ngIf="program.statut == 1">Complète</span>
+                                                    <span class="leading-relaxed whitespace-nowrap" *ngIf="program.halfstatut == 1">A moitié</span>
+                                                </span>
+                                            </td>
+                                        </ng-container>
+                
+                                        <ng-container matColumnDef="recentOrdersTableFooter">
+                                            <td
+                                                class="py-6 px-0 border-0"
+                                                mat-footer-cell
+                                                *matFooterCellDef
+                                                colspan="6">
+                                            </td>
+                                        </ng-container>
+                
+                                        <tr
+                                            mat-header-row
+                                            *matHeaderRowDef="programTableColumns"></tr>
+                                        <tr
+                                            class="order-row h-16"
+                                            mat-row
+                                            *matRowDef="let row; columns: programTableColumns;"></tr>
+                                        <tr
+                                            class="h-16 border-0"
+                                            mat-footer-row
+                                            *matFooterRowDef="['recentOrdersTableFooter']">
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div> -->
+
+                        </div>
+                    </ng-template>
+                </mat-tab>
+
+                <!-- Personnels -->
+                <mat-tab label="Personnels" *ngIf="displayMatLabel">
+                    <ng-template matTabContent>
+
+                        <!-- Menu des options possibles  -->
+                        <div class="flex items-center mb-5" *ngIf="displayUsers">
+                            <div class="flex flex-col">
+                                <div class="mr-4 text-lg font-medium tracking-tight leading-6 truncate">Liste des
+                                    personnels de ELITE AFRIQUE</div>
+                            </div>
+                            <div class="ml-auto -mt-2 -mr-2" *ngIf="displayMatLabel">
+                                <button mat-icon-button [matMenuTriggerFor]="budgetMenu">
+                                    <mat-icon class="icon-size-5"
+                                        [svgIcon]="'heroicons_solid:dots-vertical'"></mat-icon>
+                                </button>
+                                <mat-menu #budgetMenu="matMenu">
+                                    <button mat-menu-item (click)="openPopup2()">
+                                        Ajouter un personnel
+                                    </button>
+                                    <mat-divider class="my-2"></mat-divider>
+                                    <button mat-menu-item>
+                                        <span class="flex items-center">
+                                            <mat-icon class="icon-size-5 mr-3"
+                                                [svgIcon]="'heroicons_solid:printer'"></mat-icon>
+                                            <span>Imprimer la liste</span>
+                                        </span>
+                                    </button>
+                                </mat-menu>
+                            </div>
+                        </div>
+
+                        <!-- Liste du personnel -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full min-w-0" *ngIf="displayUsers">
+                            <ng-container *ngFor="let member of allusers">
+                                <div
+                                    class="flex flex-col flex-auto items-center bg-card shadow rounded-2xl overflow-hidden">
+                                    <!-- Avatar & Info -->
+                                    <div class="flex flex-col flex-auto w-full p-8 text-center" style="cursor: pointer"
+                                        (click)="detailuser(member.id)">
+                                        <div class="w-32 h-32 mx-auto rounded-full overflow-hidden">
+                                            <img class="w-full h-full object-cover"
+                                                src="assets/images/avatars/avatar.jpg">
+                                        </div>
+                                        <div class="mt-6 font-medium">{{member.nom}} {{member.prenom}}</div>
+                                        <div class="text-secondary">{{member.libellerole}}</div>
+                                    </div>
+                                    <!-- Email & Phone -->
+                                    <div class="flex items-center w-full border-t divide-x">
+                                        <a class="flex flex-auto items-center justify-center py-4 hover:bg-hover"
+                                            [href]="'mailto:' + member.email">
+                                            <mat-icon class="icon-size-5 text-hint"
+                                                [svgIcon]="'heroicons_solid:mail'"></mat-icon>
+                                            <span class="ml-2">Email</span>
+                                        </a>
+                                        <a class="flex flex-auto items-center justify-center py-4 hover:bg-hover"
+                                            [href]="'tel:' + member.numero">
+                                            <mat-icon class="icon-size-5 text-hint"
+                                                [svgIcon]="'heroicons_solid:phone'"></mat-icon>
+                                            <span class="ml-2">Contact</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </div>
+
+                        <!-- Add users form -->
+                        <div class="sm:col-span-6 flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden"
+                            *ngIf="displayAddUser">
+
+                            <div class="flex items-center">
+                                <div class="flex flex-col">
+                                    <div class="mt-8 text-4xl font-extrabold tracking-tight leading-tight">Nouvel
+                                        utilisateur</div>
+                                </div>
+                                <div class="ml-auto -mt-2 -mr-2">
+                                    <button (click)="closePopup()" mat-icon-button>
+                                        <mat-icon class="icon-size-5 text-red-600"
+                                            [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Alert -->
+                            <fuse-alert class="mt-8 -mb-4" *ngIf="showAlert" [appearance]="'outline'" [showIcon]="false"
+                                [type]="alert.type" [@shake]="alert.type === 'error'">
+                                {{alert.message}}
+                            </fuse-alert>
+
+                            <!-- Sign Up form -->
+                            <form class="flex flex-col w-full" [formGroup]="signUpForm">
+                                <div class="flex flex-col w-full lg:w-full sm:pl-8">
+                                    <div class="flex">
+                                        <!-- Name field -->
+                                        <mat-form-field class="w-1/2 pr-2">
+                                            <mat-label>Nom</mat-label>
+                                            <input id="nom" matInput [formControlName]="'nom'">
+                                            <mat-error *ngIf="signUpForm.get('nom').hasError('required')">
+                                                Le nom est obligatoire
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field class="w-1/2 pr-2">
+                                            <mat-label>Prénom</mat-label>
+                                            <input id="prenom" matInput [formControlName]="'prenom'">
+                                            <mat-error *ngIf="signUpForm.get('prenom').hasError('required')">
+                                                Le prénom est obligatoire
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+
+                                    <!-- Email field -->
+                                    <mat-form-field class="w-full pr-2">
+                                        <mat-label>Email address</mat-label>
+                                        <input id="email" matInput [formControlName]="'email'">
+                                        <mat-error *ngIf="signUpForm.get('email').hasError('required')">
+                                            L'adresse email est obligatoire
+                                        </mat-error>
+                                        <mat-error *ngIf="signUpForm.get('email').hasError('email')">
+                                            Veuillez entrer un email valide
+                                        </mat-error>
+                                    </mat-form-field>
+
+                                    <div class="flex">
+                                        <!-- Company field -->
+                                        <mat-form-field class="w-1/2 pr-2">
+                                            <mat-label>Telephone</mat-label>
+                                            <input id="cnumero" matInput [formControlName]="'numero'">
+                                            <mat-error *ngIf="signUpForm.get('numero').hasError('required')">
+                                                Le telephone est obligatoire
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field class="w-1/2 pr-2" appearance="fill">
+                                            <mat-label>Poste</mat-label>
+                                            <mat-select matNativeControl [formControlName]="'role_id'">
+                                                <ng-container>
+                                                    <mat-option *ngFor="let role of roles"
+                                                        [value]="role.id">{{role.libellerole}}</mat-option>
+                                                </ng-container>
+                                            </mat-select>
+                                            <mat-error *ngIf="signUpForm.get('role_id').hasError('role_id')">
+                                                Le poste est obligatoire
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                    <!-- Submit button -->
+                                    <button class="fuse-mat-button-large w-full mt-6" mat-flat-button
+                                        [color]="'primary'" [disabled]="signUpForm.disabled" (click)="signUp()">
+                                        <span *ngIf="!signUpForm.disabled">
+                                            Valider
+                                        </span>
+                                        <mat-progress-spinner *ngIf="signUpForm.disabled" [diameter]="24"
+                                            [mode]="'indeterminate'"></mat-progress-spinner>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Update users form -->
+                        <div class="sm:col-span-6 flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden"
+                            *ngIf="displayDetailUser">
+
+                            <div class="flex items-center">
+                                <div class="flex flex-col">
+                                    <div class="mt-8 text-4xl font-extrabold tracking-tight leading-tight">Modifier
+                                        l'utilisateur</div>
+                                </div>
+                                <div class="ml-auto -mt-2 -mr-2">
+                                    <button (click)="closePopup()" mat-icon-button>
+                                        <mat-icon class="icon-size-5 text-red-600"
+                                            [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Alert -->
+                            <fuse-alert class="mt-8 -mb-4" *ngIf="showAlert" [appearance]="'outline'" [showIcon]="false"
+                                [type]="alert.type" [@shake]="alert.type === 'error'">
+                                {{alert.message}}
+                            </fuse-alert>
+
+                            <!-- Update form -->
+                            <form class="flex flex-col w-full" [formGroup]="updateProfileForm">
+                                <div class="flex flex-col w-full lg:w-full sm:pl-8">
+                                    <div class="flex">
+                                        <!-- Name field -->
+                                        <mat-form-field class="w-1/2 pr-2">
+                                            <mat-label>Nom</mat-label>
+                                            <input id="nom" matInput [formControlName]="'nom'">
+                                            <mat-error *ngIf="updateProfileForm.get('nom').hasError('required')">
+                                                Le nom est obligatoire
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field class="w-1/2 pr-2">
+                                            <mat-label>Prénom</mat-label>
+                                            <input id="prenom" matInput [formControlName]="'prenom'">
+                                            <mat-error *ngIf="updateProfileForm.get('prenom').hasError('required')">
+                                                Le prénom est obligatoire
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+
+                                    <!-- Email field -->
+                                    <mat-form-field class="w-full pr-2">
+                                        <mat-label>Email address</mat-label>
+                                        <input id="email" matInput [formControlName]="'email'">
+                                        <mat-error *ngIf="updateProfileForm.get('email').hasError('required')">
+                                            L'adresse email est obligatoire
+                                        </mat-error>
+                                        <mat-error *ngIf="updateProfileForm.get('email').hasError('email')">
+                                            Veuillez entrer un email valide
+                                        </mat-error>
+                                    </mat-form-field>
+
+                                    <div class="flex">
+                                        <!-- Company field -->
+                                        <mat-form-field class="w-1/2 pr-2">
+                                            <mat-label>Telephone</mat-label>
+                                            <input id="cnumero" matInput [formControlName]="'numero'">
+                                            <mat-error *ngIf="updateProfileForm.get('numero').hasError('required')">
+                                                Le telephone est obligatoire
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field class="w-1/2 pr-2" appearance="fill">
+                                            <mat-label>Poste</mat-label>
+                                            <mat-select matNativeControl [formControlName]="'role_id'">
+                                                <ng-container>
+                                                    <mat-option *ngFor="let role of roles"
+                                                        [value]="role.id">{{role.libellerole}}</mat-option>
+                                                </ng-container>
+                                            </mat-select>
+                                            <mat-error *ngIf="updateProfileForm.get('role_id').hasError('role_id')">
+                                                Le poste est obligatoire
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field class="w-full hidden">
+                                            <mat-label>Id</mat-label>
+                                            <input matInput [formControlName]="'id'">
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
+                                        <button class="ml-4" mat-flat-button [color]="'primary'"
+                                            (click)="updateUser()" *ngIf="displayMatLabel">
+                                            <mat-icon [svgIcon]="'heroicons_outline:pencil'"></mat-icon>
+                                            <span class="ml-2 mr-1">Modifier</span>
+                                        </button>
+
+                                        <button class="ml-4" mat-flat-button [color]="'warn'"
+                                            (click)="deleteUser(detail_id.user)" *ngIf="displayMatLabel">
+                                            <mat-icon [svgIcon]="'heroicons_outline:archive'"></mat-icon>
+                                            <span class="ml-2 mr-1">Supprimer</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </ng-template>
+                </mat-tab>
+
+                <!-- Rapports  -->
+                <mat-tab label="Rapports" *ngIf="displayMatLabel">
+                    <ng-template matTabContent>
+                        <div class="relative flex flex-col flex-auto min-w-0 overflow-hidden">
+
+                            <!-- Main -->
+                            <div class="flex flex-col flex-auto px-6 py-10 sm:px-16 sm:pt-18 sm:pb-20">
+
+                                <!-- Activity feed -->
+                                <div class="w-full max-w-3xl">
+
+                                    <!-- Title -->
+                                    <div class="text-4xl font-extrabold tracking-tight leading-none">Rapports
+                                        d'activités</div>
+                                    <div class="mt-1.5 text-lg text-secondary">Liste des rapports des activités non
+                                        executées ou à moitié executées.</div>
+
+                                    <ng-container>
+                                        <ng-container *ngIf="activities.length; else noActivity">
+                                            <div class="mt-8">
+                                                <ol>
+                                                    <!-- Activities -->
+                                                    <ng-container
+                                                        *ngFor="let activity of activities; let i = index; let first = first; let last = last; trackBy: trackByFn">
+
+                                                        <!-- Date separator -->
+                                                        <ng-container
+                                                            *ngIf="first || !isSameDay(activity.created_at, activities[i - 1].created_at)">
+                                                            <li class="relative flex py-7">
+                                                                <div
+                                                                    class="relative py-2 px-8 text-md font-medium leading-5 rounded-full bg-primary text-on-primary">
+                                                                    {{getRelativeFormat(activity.created_at)}}
+                                                                </div>
+                                                            </li>
+                                                        </ng-container>
+
+                                                        <!-- Activity -->
+                                                        <li class="relative flex py-7">
+                                                            <!-- Line -->
+                                                            <ng-container
+                                                                *ngIf="!last && isSameDay(activity.created_at, activities[i + 1].created_at)">
+                                                                <div
+                                                                    class="absolute top-7 left-5 w-0.5 h-full -ml-px bg-gray-300 dark:bg-gray-600">
+                                                                </div>
+                                                            </ng-container>
+                                                            <!-- Activity content -->
+                                                            <div class="relative flex flex-auto">
+                                                                <!-- Image -->
+                                                                <ng-container>
+                                                                    <img class="shrink-0 w-10 h-10 mr-4 rounded-full overflow-hidden object-cover object-center"
+                                                                        src="assets/images/avatars/avatar.jpg"
+                                                                        [alt]="'Activity image'">
+                                                                </ng-container>
+                                                                <!-- Content -->
+                                                                <div class="flex flex-col flex-auto items-start">
+                                                                    <!-- Activites -->
+                                                                    <ng-container>
+                                                                        <strong>{{activity.nom}}
+                                                                            {{activity.prenom}}</strong>
+                                                                        <div
+                                                                            [innerHTML]="'Activité : '+activity.libelleactivite">
+                                                                        </div>
+                                                                    </ng-container>
+                                                                    <div
+                                                                        class="flex flex-col sm:flex-row sm:items-center mt-2 sm:mt-1 sm:space-x-2 text-md leading-5">
+                                                                        <!-- Date -->
+                                                                        <div class="text-secondary">
+                                                                            {{activity.created_at | date:'dd MMM, h:mm
+                                                                            a'}}
+                                                                        </div>
+                                                                    </div>
+                                                                    <!-- body -->
+                                                                    <ng-container *ngIf="activity.body">
+                                                                        <div class="mt-4 py-4 px-5 rounded-lg bg-gray-200 dark:bg-gray-800"
+                                                                            [innerHTML]="activity.body"></div>
+                                                                    </ng-container>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    </ng-container>
+                                                </ol>
+                                            </div>
+                                        </ng-container>
+                                    </ng-container>
+
+                                    <!-- No Activity template -->
+                                    <ng-template #noActivity>
+                                        Pas de rapports d'activités pour le moment...
+                                    </ng-template>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </ng-template>
+                </mat-tab>
+
+            </mat-tab-group>
+        </div>
+    </div>
+
+</div>
