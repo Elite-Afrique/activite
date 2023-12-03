@@ -4,6 +4,9 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class VariableServiceService {
-  url: string = 'http://127.0.0.1:8000/api';
-  constructor() { }
+  adresse = location.origin + '/backend/public/index.php/';
+  url: string = location.origin.includes('activite.elite-afrique.com')? this.adresse: 'http://127.0.0.1:8000/api';
+  constructor() { 
+    // console.log(this.url)
+  }
 }
